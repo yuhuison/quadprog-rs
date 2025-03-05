@@ -1,0 +1,15 @@
+[registries.Meocap]
+index = "sparse+https://pkgs.dev.azure.com/Meocap/_packaging/Meocap/Cargo/index/"
+credential-provider = "cargo:token"
+
+[profile.release]
+# Explicitly disable LTO which the Xtensa codegen backend has issues
+lto = "fat"
+opt-level = 3
+codegen-units = 1
+
+[profile.dev]
+# lto = "fat"
+opt-level = 3
+# codegen-units = 1
+debug = true

@@ -422,6 +422,7 @@ pub fn solve_qp(
         let mut slack = sv[iadd];
         let mut u = 0.0;
         let reverse_step = slack > 0.0;
+        const MAX_ITER:usize = 400;
 
         let mut idel: usize; // the constraint to remove from the active set
         while {
@@ -471,7 +472,12 @@ pub fn solve_qp(
                 let temp_ztn = -dot(zv, aadd);
                 (temp_ztn, slack.abs() / temp_ztn)
             };
+
             if t1 == f64::INFINITY && t2 == f64::INFINITY {
+                return Err("optimization is infeasible");
+            }
+
+            if iter >= MAX_ITER{
                 return Err("optimization is infeasible");
             }
 
@@ -496,7 +502,7 @@ pub fn solve_qp(
             axpy(-step, &rv, &mut uv);
             u += step;
 
-            partial_step
+            partial_step & (iter < MAX_ITER)
         } {
             // Remove constraint idel from the active set.
             qr_delete(iact.len(), idel + 1, qmat, rmat);
